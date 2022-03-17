@@ -5,8 +5,24 @@
     <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
     <title> DVA Lab 3 - Exercise 1</title>
+    <style>
+        *{
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        p{
+            font-size: 0.05em;
+        }
+        svg{
+            background: rgb(202, 193, 193);
+        }
+
+        .country{
+            fill: rgb(238, 238, 25);
+        }
+    </style>
 </head>
 <body>
+    
     <h2 style="text-align: center; font-family: arial">
         DVA Lab 3 Exercise 1
     </h2>
@@ -15,24 +31,54 @@
         Exercise 1 :  To implement an interactive web-based application in D3. 
     </h5>
 
-    <svg id="my_dataviz" width="700" height="700"></svg>
-
+    <div id="map"></div>
     <script>
  
-            var margin = { top:50 , left:50 , right:50 , bottom: 50}
+            
+
+            var file = d3.csv("https://raw.githubusercontent.com/Shashank6295/DVALab3/master/owid-covid-data.csv", function (data) {
+                        // console.log(data);
+                        // console.log(data.location);
+                        return data;
+                        }).then(function (data) {
+                            showMap(data); 
+                            });
+                       
+                    function showMap(data){
+                        console.log(data);
+
+                    var countries = data.map(function(d){ return d.location})
+                        console.log(countries)
+
+                var margin = { top:50 , left:50 , right:50 , bottom: 50}
                 height = 400 - margin.top - margin.bottom,
                 width = 800 - margin.left - margin.right;
 
-            var svg = d3.select("map")
+                var svg = d3.select("#map")
                     .append("svg")
                     .attr("height", height + margin.top + margin.bottom)
                     .attr("width", width + margin.left + margin.right)
                     .append("g")
                     .attr("transform","translate(" + margin.left + "," + margin.top + ")");
 
-                    d3.csv("owid-covid-data.csv", function (data) {
-                        return data;
-                        })
+                var projection = d3.geoMercator()
+                    .translate([width / 2, height /2])
+                    .scale(100)
+                
+                
+                var path = d3.geoPath()
+                    .projection(projection)
+
+                        svg.selectAll(".country")
+                            .data(countries)
+                            .enter().append("path")
+                            .attr("class","country")
+                            .attr("d",path)
+                            .attr("fill","black")
+
+                        }
+                    
+
 
     </script>    
 </body>
